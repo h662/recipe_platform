@@ -1,7 +1,9 @@
 package com.h662.recipe_platform.service;
 
+import com.h662.recipe_platform.dto.AddIngredientDto;
 import com.h662.recipe_platform.dto.RecipeDto;
 import com.h662.recipe_platform.dto.RecipeResponseDto;
+import com.h662.recipe_platform.model.Ingredient;
 import com.h662.recipe_platform.model.Recipe;
 import com.h662.recipe_platform.repository.IngredientRepository;
 import com.h662.recipe_platform.repository.RecipeIngredientRepository;
@@ -9,6 +11,8 @@ import com.h662.recipe_platform.repository.RecipeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +28,12 @@ public class RecipeService {
         recipe.setDescription(dto.getDescription());
         Recipe saved = recipeRepository.save(recipe);
         return new RecipeResponseDto(saved.getId(), saved.getTitle(), saved.getDescription());
+    }
+
+    public void addIngredient(Long recipeId, AddIngredientDto dto) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new NoSuchElementException("레시피를 찾을 수 없습니다."));
+        Ingredient ingredient = ingredientRepository.findById(dto.getIngredientId())
+                .orElseThrow(() -> new NoSuchElementException("재료를 찾을 수 없습니다."));
     }
 }
